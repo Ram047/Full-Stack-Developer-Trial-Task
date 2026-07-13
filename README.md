@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PipelineIQ
+> Sales deal pipeline management and weighted revenue forecasting built for high-growth B2B teams.
 
-## Getting Started
+PipelineIQ is a CRUD-rich, dashboard-heavy sales workspace featuring interactive Kanban deal cards with optimistic updates, keyset tables with debounced searches, streamable CSV data exports, custom printable media styling, and robust database-backed session security.
 
-First, run the development server:
+## Tech Stack
+Next.js 16 (App Router) • TypeScript • SQLite • Prisma ORM • Tailwind CSS • Lucide Icons • Node.js Native Test Runner
 
+## Demo Credentials
+Reviewers can evaluate the application under different RBAC roles using these seeded profiles (avoiding the need to register and complete verification flows):
+
+| Profile Name | Email Address | Password | Role Description |
+| --- | --- | --- | --- |
+| **Valerie Viewer** | `demo@demo.com` | `demo1234` | **Viewer** - Read-only dashboard access. Mutations blocked. |
+| **Mike Member** | `member@demo.com` | `demo1234` | **Member** - CRUD operations for deals, contacts, companies. |
+| **Sarah Owner** | `owner@demo.com` | `demo1234` | **Owner** - Full admin panel access, database and log views. |
+
+## Quick Start
+
+1.  **Clone the project**:
+    ```bash
+    git clone https://github.com/you/pipeline-iq.git
+    cd pipeline-iq
+    ```
+2.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
+3.  **Synchronize database & Seed dummy rows**:
+    ```bash
+    npx prisma generate
+    npx prisma db push
+    npx prisma db seed
+    ```
+4.  **Launch local development server**:
+    ```bash
+    npm run dev
+    ```
+    Open [http://localhost:3000](http://localhost:3000) to view the application workspace.
+
+## Environment Variables
+
+PipelineIQ is configured to run out of the box with zero external configuration using SQLite. For production, add these variables in your platform settings:
+
+| Variable Name | Required | Default Value | Description |
+| --- | --- | --- | --- |
+| `DATABASE_URL` | Yes | `file:./dev.db` | Target SQLite/Postgres connection string. |
+| `NODE_ENV` | No | `development` | Active deployment environment context. |
+
+## Technical Architecture
+
+Details on the schema models, ER diagram, and token rate limits are documented in [docs/architecture.md](docs/architecture.md).
+
+## Testing
+
+Run unit tests verifying session authorization and input Zod validation rules:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run test
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+Permissive [MIT License](LICENSE). Credits to Digital Heroes developer program.
