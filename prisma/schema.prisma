@@ -1,0 +1,120 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                            String        @id @default(uuid())
+  email                         String        @unique
+  passwordHash                  String
+  name                          String
+  role                          String        // OWNER, ADMIN, MEMBER, VIEWER
+  emailVerified                 Boolean       @default(false)
+  emailVerificationToken        String?
+  emailVerificationTokenExpires DateTime?
+  passwordResetToken            String?
+  passwordResetTokenExpires     DateTime?
+  createdAt                     DateTime      @default(now())
+  updatedAt                     DateTime      @updatedAt
+  sessions                      Session[]
+  companies                     Company[]
+  contacts                      Contact[]
+  deals                         Deal[]
+  activityLogs                  ActivityLog[]
+}
+
+model Session {
+  id                   String   @id @default(uuid())
+  userId               String
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt            DateTime
+  rotatedFromSessionId String?
+  userAgent            String?
+  ipAddress            String?
+  createdAt            DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Company {
+  id        String    @id @default(uuid())
+  name      String
+  domain    String?
+  industry  String?
+  size      String?
+  ownerId   String
+  owner     User      @relation(fields: [ownerId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  contacts  Contact[]
+  deals     Deal[]
+
+  @@index([ownerId])
+}
+
+model Contact {
+  id        String    @id @default(uuid())
+  name      String
+  email     String?
+  phone     String?
+  title     String?
+  companyId String?
+  company   Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  ownerId   String
+  owner     User      @relation(fields: [ownerId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  deals     Deal[]
+
+  @@index([companyId])
+  @@index([ownerId])
+}
+
+model Deal {
+  id                 String    @id @default(uuid())
+  title              String
+  value              Float
+  stage              String    // LEAD, QUALIFIED, PROPOSAL, NEGOTIATION, WON, LOST
+  probability        Float     // 0.0 to 100.0
+  expectedCloseDate  DateTime?
+  companyId          String?
+  company            Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  contactId          String?
+  contact            Contact?  @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  ownerId            String
+  owner              User      @relation(fields: [ownerId], references: [id])
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  deletedAt          DateTime?
+
+  @@index([companyId])
+  @@index([contactId])
+  @@index([ownerId])
+}
+
+model ActivityLog {
+  id         String   @id @default(uuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  entityType String   // USER, AUTH, DEAL, CONTACT, COMPANY
+  entityId   String?
+  action     String   // CREATE, UPDATE, DELETE, LOGIN, LOGOUT, VERIFICATION, PASSWORD_RESET
+  details    String   // JSON stringified changes/context
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+}
+
+model RateLimitBucket {
+  key          String   @id
+  tokens       Float
+  lastRefilled DateTime
+}
